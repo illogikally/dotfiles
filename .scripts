@@ -1,0 +1,177 @@
+#!/bin/bash
+
+open() 
+{
+  local filetype
+
+  for f in "$@"; do
+    filetype=$(_type_query "$f")
+    if [[ $filetype =~ 'image/' ]]; then
+      feh --scale-down --auto-zoom "$f"
+    else
+      xdg-open "$f"
+
+  fi; done
+   # [[ $# -lt 4 && $# -gt 0 ]] && for f in "$@"; do
+   #    if [[ "$f" =~ .rar$ ]]; then
+   #       unrar x "$f" "${f%.rar}"/ && o $_
+   #    elif [[ "$f" =~ .zip$ ]]; then
+   #       unzip "$f" -d "${f%.zip}" && o $_
+   #    else 
+   #      wslpath -w "$f" | sed 's;.*;"&";' | xargs cmd.exe /C start "" &> /dev/null
+   # fi; done
+}
+
+rfo()
+{
+  if [[ "$2" =~ ^- ]]; then 
+    f="$(fdfind $@)"
+  
+
+  elif [[ "$3" =~ ^- || -z "$3" ]]; then
+    f="$(fdfind "${@:3}" "$2")" 
+
+  else
+    p="$(sed "s;[^/]$;&/;" <<< "$3")"
+    f="$(fdfind "${@:4}" "$2" "$3" | sed "s;$p;;")"
+  fi
+
+  f=";confirm\n""$f"
+  # echo $"$(sed 's/\n//' <<< $f)"
+  # return
+  local choose paths
+
+  while [[ ! -z "$f" ]]; do
+    choose="$(echo "$f" | _fzf40)"
+    [[ $choose =~ ";confirm" ]] && break
+    if [[ $choose = ";delete" ]]; then
+      [[ ! -z "${paths// }" ]] && echo -e "\e[1A\e[K\e[1A" && paths="$(sed 's/\s"[^"]*"$//' <<< $paths)" 
+      continue
+    fi
+    echo $choose
+    paths="$paths"" ""\"$p$choose\""
+    # choose="$(sed "s,\[/\[\]\$\^\],\\\0" <<< $choose)"
+    f="$(grep -Fvw $choose <<< "$f")"
+    # echo "grep -Fv $choose "
+    # echo $f
+    # echo $choose
+    # choose="$(sed "s/\n//" << $choose)"
+    # f="$(awk "\!/$choose/" <<< $f)"
+  done
+
+  local command="$(sed "s;@@;$paths;" <<< $1)"
+  echo $command
+  # [[ $choose = ":confirm" && ! -z $paths ]] && eval $command
+  # echo $paths
+
+
+  # [ ! -z "$f" ] && echo "$p$f"
+  unset f p
+
+}
+
+_type_query()
+{
+  echo $(xdg-mime query filetype "$1")
+}
+
+_ff() 
+{
+  if [[ "$1" =~ ^- ]]; then 
+    f="$(fdfind $@ | _fzf40)"
+  
+
+  elif [[ "$2" =~ ^- || -z "$2" ]]; then
+
+    f="$(fdfind "${@:2}" "$1" | _fzf40)" 
+
+  else
+    p="$(sed "s;[^/]$;&/;" <<< "$2")"
+    f="$(fdfind "${@:3}" "$1" "$2" | sed "s;$p;;" | _fzf40)"
+  fi
+
+
+  [ ! -z "$f" ] && echo "$p$f"
+  unset f p
+}
+
+fo() {
+   local f="$(_ff "$@")" 
+   [ ! -z "$f" ] && open "$f"
+}
+
+_fzf40() {
+   echo "$(fzf --height 40% --reverse --select-1 "$@")" 
+} 
+
+fz() {
+ 	[ $# -gt 0 ] && _z "$*" && return
+   cd "$(_fz)"
+}
+
+_fz() {
+   echo $(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" \
+      | sed 's;^[0-9,.]* *;;')
+}
+
+_fd() {
+   local f="$(_ff $@)"
+   [ ! -d "$f" ] && sed 's;/[^/]\{1,\}$;;' <<< "$f" && return
+   echo "$f"
+}
+
+fcd() { 
+   cd "$(_fd $@)" 
+}
+
+fex() { 
+   explorer.exe "$(_fd $@ | xargs -I{} wslpath -w "{}")" 
+}
+
+ds() {
+   local f="$(_ds)"
+   [ ! -z "$f" ] && o "$dl/$f"
+}
+_ds() {
+   local f="$(ls -1t $dl | _fzf40)"
+   echo $f
+}
+
+tc() {
+   [ $# -gt 0 ] && touch "$@" && code "$@"
+}
+
+post() {
+   curl -H "Content-type: application/json" -X POST -d "$1" "$2"
+}
+
+mcd() {
+   mkdir "$1" && cd $_
+}
+
+magick()
+{
+   gm convert ${@:1:$# -1} -background none -append -gravity center "${@: -1}"
+}
+
+giffy() {
+   local w="600" fps=24 out="out.gif" s= duration=
+   while [[ "$1" =~ ^- ]]; do case $1 in
+      -w | --width )
+         shift; w=$1 ;;
+      -f | --fps )
+         shift; fps=$1 ;;
+      -o | --output )
+         shift; out=$1 ;;
+      -s | --start )
+         shift; s="-ss $1" ;;
+      -d | --duration )
+         shift; duration="-t $1" ;;
+   esac; shift; done;
+
+   local input=$1 && [ -z $input ] && echo "Err: input must not empty" && return
+
+   ffmpeg $s $duration -i $input -vf \
+      "fps=$fps,scale=$w:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
+      -loop 0 $out
+}
