@@ -72,10 +72,11 @@ ZSH_THEME=""
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  git
   fzf-tab
   zsh-syntax-highlighting
   zsh-autosuggestions
-   )
+)
 
 source $ZSH/oh-my-zsh.sh
 # User configuration
@@ -85,19 +86,20 @@ ZSH_HIGHLIGHT_STYLES[path]=none
 ZSH_HIGHLIGHT_STYLES[path_prefix]=none
 
 [ -f ~/.aliases ] && source ~/.aliases
-[ -f ~/opt/z/z.sh ] && source ~/opt/z/z.sh
 [ -f ~/.scripts ] && source ~/.scripts
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export EDITOR='nvim'
 
-eval `dircolors ~/opt/dircolors-solarized/dircolors.ansi-dark`
+# eval `dircolors ~/opt/dircolors-solarized/dircolors.ansi-dark`
+source "$HOME/.local/share/lscolors.sh"
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 prompt pure
 
+eval "$(fasd --init auto)"
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPATH="/usr/local/man:$MANPATH"

@@ -18,6 +18,7 @@ alias ari="aria2c"
 alias sit="sudoedit"
 alias python="python3"
 alias exp="explorer.exe ."
+alias gsta="git stash push --keep-index"
 alias sublime="/mnt/c/Program\ Files/Sublime\ Text\ 3/sublime_text.exe"
 alias clip='clip.exe'
 alias rg='rg -S'

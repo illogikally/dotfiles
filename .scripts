@@ -7,9 +7,9 @@ open()
   for f in "$@"; do
     filetype=$(_type_query "$f")
     if [[ $filetype =~ 'image/' ]]; then
-      feh --scale-down --auto-zoom "$f"
+      feh --scale-down --auto-zoom -w "$f"
     else
-      xdg-open "$f"
+      (xdg-open "$f")
 
   fi; done
    # [[ $# -lt 4 && $# -gt 0 ]] && for f in "$@"; do
@@ -22,52 +22,52 @@ open()
    # fi; done
 }
 
-rfo()
+rr()
 {
-  if [[ "$2" =~ ^- ]]; then 
-    f="$(fdfind $@)"
-  
+  local f p choose paths command
 
+  if [[ "$2" =~ ^- ]]; then 
+    f="$(fdfind "${@:2}")"
+  
   elif [[ "$3" =~ ^- || -z "$3" ]]; then
     f="$(fdfind "${@:3}" "$2")" 
 
   else
     p="$(sed "s;[^/]$;&/;" <<< "$3")"
-    f="$(fdfind "${@:4}" "$2" "$3" | sed "s;$p;;")"
+    f="$(
+      fdfind "${@:4}" "$2" "$3" \
+        | sed "s;^$(sed -e 's/[]\/$*.^[]/\\&/g' <<< $p);;"
+    )"
   fi
 
-  f=";confirm\n""$f"
-  # echo $"$(sed 's/\n//' <<< $f)"
-  # return
-  local choose paths
-
   while [[ ! -z "$f" ]]; do
-    choose="$(echo "$f" | _fzf40)"
-    [[ $choose =~ ";confirm" ]] && break
+    choose="$(echo "$(sort <<< $f)""\n;confirm\n;delete" | _fzf40)"
+    [[ $choose =~ ";confirm" || -z $choose ]] && break
+
     if [[ $choose = ";delete" ]]; then
-      [[ ! -z "${paths// }" ]] && echo -e "\e[1A\e[K\e[1A" && paths="$(sed 's/\s"[^"]*"$//' <<< $paths)" 
+      if [[ ! -z "${paths// }" ]]; then
+        echo -e "\e[1A\e[K\e[1A" 
+        f="$f"$'\n'"$(grep -Po '[^"]*(?="$)' <<< $paths \
+          | sed "s;^$(sed -e 's/[]\/$*.^[]/\\&/g' <<< $p);;")" 
+        paths="$(sed 's/\s"[^"]*"$//' <<< $paths)" 
+      fi
       continue
     fi
+
     echo $choose
-    paths="$paths"" ""\"$p$choose\""
-    # choose="$(sed "s,\[/\[\]\$\^\],\\\0" <<< $choose)"
-    f="$(grep -Fvw $choose <<< "$f")"
-    # echo "grep -Fv $choose "
-    # echo $f
-    # echo $choose
-    # choose="$(sed "s/\n//" << $choose)"
-    # f="$(awk "\!/$choose/" <<< $f)"
+    paths="$paths ""\"$p$choose\""
+    f="$(grep -Fvx $choose <<< "$f")"
   done
 
-  local command="$(sed "s;@@;$paths;" <<< $1)"
-  echo $command
-  # [[ $choose = ":confirm" && ! -z $paths ]] && eval $command
-  # echo $paths
+  # for i in $( seq 1 $(($(grep -o '"' <<< $paths | wc -l) / 2))); do
+  #   echo -e "\e[1A\e[K\e[1A" 
+  # done
 
-
-  # [ ! -z "$f" ] && echo "$p$f"
-  unset f p
-
+  [[ ! -z ${paths// } && ! -z $choose ]] \
+    && command="$(sed "s;@@;${paths/ /};" <<< $1)" \
+    && echo $command \
+    # && eval $command 
+  # unset f p
 }
 
 _type_query()
@@ -95,66 +95,63 @@ _ff()
   unset f p
 }
 
-fo() {
-   local f="$(_ff "$@")" 
-   [ ! -z "$f" ] && open "$f"
+fo() 
+{
+  local f="$(_ff "$@")" 
+  [ ! -z "$f" ] && open "$f"
 }
 
-_fzf40() {
-   echo "$(fzf --height 40% --reverse --select-1 "$@")" 
-} 
+_fzf40() { echo "$(fzf --height 40% --reverse --select-1 "$@")" } 
 
-fz() {
- 	[ $# -gt 0 ] && _z "$*" && return
-   cd "$(_fz)"
-}
+# fz() 
+# {
+#  	[ $# -gt 0 ] && _z "$*" && return
+#   cd "$(_fz)"
+# }
 
-_fz() {
-   echo $(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" \
-      | sed 's;^[0-9,.]* *;;')
-}
+# _fz() 
+# {
+#   echo $(
+#     _z -l 2>&1 \
+#     | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" \
+#     | sed 's;^[0-9,.]* *;;'
+#   )
+# }
 
-_fd() {
+_fd() 
+{
    local f="$(_ff $@)"
    [ ! -d "$f" ] && sed 's;/[^/]\{1,\}$;;' <<< "$f" && return
    echo "$f"
 }
 
-fcd() { 
-   cd "$(_fd $@)" 
-}
+fcd() { cd "$(_fd $@)" }
 
-fex() { 
-   explorer.exe "$(_fd $@ | xargs -I{} wslpath -w "{}")" 
-}
+fex() { explorer.exe "$(_fd $@ | xargs -I{} wslpath -w "{}")" }
 
-ds() {
+ds() 
+{
    local f="$(_ds)"
    [ ! -z "$f" ] && o "$dl/$f"
 }
-_ds() {
+
+_ds() 
+{
    local f="$(ls -1t $dl | _fzf40)"
    echo $f
 }
 
-tc() {
-   [ $# -gt 0 ] && touch "$@" && code "$@"
-}
+tc() { [ $# -gt 0 ] && touch "$@" && code "$@" }
 
-post() {
-   curl -H "Content-type: application/json" -X POST -d "$1" "$2"
-}
-
-mcd() {
-   mkdir "$1" && cd $_
-}
+mcd() { mkdir "$1" && cd $_ }
 
 magick()
 {
    gm convert ${@:1:$# -1} -background none -append -gravity center "${@: -1}"
 }
 
-giffy() {
+giffy() 
+{
    local w="600" fps=24 out="out.gif" s= duration=
    while [[ "$1" =~ ^- ]]; do case $1 in
       -w | --width )
