@@ -8,6 +8,8 @@ open()
     filetype=$(_type_query "$f")
     if [[ $filetype =~ 'image/' ]]; then
       feh --scale-down --auto-zoom -w "$f"
+    elif grep -qi microsoft /proc/version; then
+      wslpath -w "$f" | sed 's;.*;"&";' | xargs cmd.exe /C start "" &> /dev/null
     else
       (xdg-open "$f")
 
