@@ -99,7 +99,8 @@ fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 prompt pure
 
-eval "$(fasd --init auto)"
+# eval "$(fasd --init auto)"
+source /usr/local/bin/z.sh
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPATH="/usr/local/man:$MANPATH"

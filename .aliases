@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-export user="Xael"
+export user="Admin"
 export m="/mnt/c/Users/$user"
 
 export qb="/mnt/d/qbittorrent"
