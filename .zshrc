@@ -1,7 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH="$PATH:/home/xael/.local/bin"
+export PATH="$PATH:/home/xael/.local/bin:/opt/gradle/gradle-7.6/bin"
 # Path to your oh-my-zsh installation.
 export ZSH="/home/xael/.oh-my-zsh"
 
@@ -101,8 +101,9 @@ prompt pure
 
 # eval "$(fasd --init auto)"
 source /usr/local/bin/z.sh
+source "$HOME/.cargo/env"
 
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment

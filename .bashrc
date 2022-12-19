@@ -128,3 +128,4 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 [ -f ~/.fzf.bash ]&& source ~/.fzf.bash
 export PATH="/home/xael/.local/bin:$PATH"
 export PATH="/home/xael/.local/bin:$PATH"
+. "$HOME/.cargo/env"
