@@ -1,7 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH="$PATH:/home/xael/.local/bin:/opt/gradle/gradle-7.6/bin"
+export PATH="$PATH:/home/xael/.local/bin:/opt/gradle/gradle-7.6.1/bin:/usr/local/go/bin:/usr/lib/wsl/lib"
 # Path to your oh-my-zsh installation.
 export ZSH="/home/xael/.oh-my-zsh"
 
@@ -127,3 +127,20 @@ export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# bun completions
+[ -s "/home/xael/.bun/_bun" ] && source "/home/xael/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+PATH="/home/xael/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/xael/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/xael/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/xael/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/xael/perl5"; export PERL_MM_OPT;

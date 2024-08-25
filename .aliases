@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 
-export user="Admin"
+export user="Xael"
 export m="/mnt/c/Users/$user"
 
-export qb="/mnt/d/qbittorrent"
+export qb="/mnt/e/qbit"
 export de="/mnt/c/Users/$user/Desktop"
 export pf='/mnt/c/Program Files'
 export gh="https://github.com"
@@ -17,7 +17,6 @@ alias vim="nvim"
 alias ari="aria2c"
 alias sit="sudoedit"
 alias python="python3"
-alias exp="explorer.exe ."
 alias gsta="git stash push --keep-index"
 alias sublime="/mnt/c/Program\ Files/Sublime\ Text\ 3/sublime_text.exe"
 alias clip='clip.exe'
@@ -32,3 +31,7 @@ alias la="ls -a"
 alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias glgb="glg --branches"
 alias gst="git status"
+alias sudow="sudo.exe"
+alias pwsh=pwsh.exe
+alias pwshc=pwsh.exe -Commmand
+alias lms="/mnt/c/Users/Xael/.cache/lm-studio/bin/lms.exe"
