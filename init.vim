@@ -73,20 +73,6 @@ let g:airline#extensions#tabline#fnamemode = ':t'
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#whitespace#enabled = 0
 let g:airline#extensions#wordcount#enabled = 0
-
-" nmap <Leader>1 <Plug>AirlineSelectTab1
-" nmap <Leader>2 <Plug>AirlineSelectTab2
-" nmap <Leader>3 <Plug>AirlineSelectTab3
-" nmap <Leader>4 <Plug>AirlineSelectTab4
-" nmap <Leader>5 <Plug>AirlineSelectTab5
-" nmap <Leader>6 <Plug>AirlineSelectTab6
-" nmap <Leader>7 <Plug>AirlineSelectTab7
-" nmap <Leader>8 <Plug>AirlineSelectTab8
-" nmap <Leader>9 <Plug>AirlineSelectTab9
-" nmap <Leader>[ <Plug>AirlineSelectPrevTab
-" nmap <Leader>] <Plug>AirlineSelectNextTab
-
-" Buffers
 nnoremap <Leader>bb :bd<CR>
 nnoremap <Leader>[ :bp<CR>
 nnoremap <Leader>] :bn<CR>
@@ -96,6 +82,7 @@ nnoremap <Leader>r :%s///g<Left><Left>
 nnoremap <Leader>rc :%s///gc<Left><Left><Left>
 xnoremap <Leader>r :s/<C-r>"//g<Left><Left>
 xnoremap <Leader>rc :s/<C-r>"//gc<Left><Left><Left>
+nnoremap <Leader>cc :!g++ main.cpp -o main && ./main<CR>
 
 nnoremap <Leader>f :FZF<CR>
 nnoremap <Leader>b :Bu<CR>
@@ -111,6 +98,6 @@ let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to
 if executable(s:clip)
     augroup WSLYank
         autocmd!
-        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, join(v:event.regcontents, "\n")) | endif
     augroup END
 endif
